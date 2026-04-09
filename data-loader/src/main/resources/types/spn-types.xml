@@ -1,0 +1,210 @@
+<CGR
+  xsi:noNamespaceSchemaLocation="classpath:xsd/cgr.xsd"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <organization code="USACE">
+
+    <type
+      code="Creek"
+      label="Creek"
+      description="Creek"
+      visibility="PUBLIC"
+      geometryType="LINE"
+      isGeometryEditable="true">
+    </type>
+    <type
+      code="LandParcel"
+      label="Land Parcel"
+      description="Land Parcel"
+      visibility="PUBLIC"
+      geometryType="POLYGON"
+      isGeometryEditable="true">
+      <attributes>      
+        <text
+          code="landUse"
+          label="Land Use"
+          description="Land Use" />
+        <text
+          code="mailAddress"
+          label="Mail Address"
+          description="Mail Address" />          
+      </attributes>
+      
+    </type>
+    
+    <type
+      code="FloodScenario"
+      label="Flood scenario"
+      description="Flood scenario"
+      visibility="PUBLIC"
+      geometryType="POLYGON"
+      isGeometryEditable="true">
+      <attributes>
+        <text
+          code="depth"
+          label="Depth"
+          description="Depth" />
+        <text
+          code="velocity"
+          label="Velocity"
+          description="Velocity" />
+      </attributes>
+    </type>
+
+    <type
+      code="Lake"
+      label="Lake"
+      description="Lake"
+      visibility="PUBLIC"
+      geometryType="POLYGON"
+      isGeometryEditable="true">
+    </type>
+
+
+    <type
+      code="Road"
+      label="Road"
+      description="Road"
+      visibility="PUBLIC"
+      geometryType="LINE"
+      isGeometryEditable="true">
+    </type>
+
+    <type
+      code="ComboPlanBridge"
+      label="Combo Plan Bridge"
+      description="Combo Plan Bridge"
+      visibility="PUBLIC"
+      geometryType="POLYGON"
+      isGeometryEditable="true">
+    </type>
+
+    <type
+      code="ComboPlanFloodwall"
+      label="Combo Plan Floodwall"
+      description="Combo Plan Floodwall"
+      visibility="PUBLIC"
+      geometryType="LINE"
+      isGeometryEditable="true">
+    </type>
+
+    <type
+      code="ComboPlanSlopeRepair"
+      label="Combo Plan Slope Repair"
+      description="Combo Plan Slope Repair"
+      visibility="PUBLIC"
+      geometryType="POLYGON"
+      isGeometryEditable="true">
+    </type>
+
+
+    <type
+      code="ComboPlanChannelFtprnt"
+      label="Combo Plan Channel Widening Footprint"
+      description="Combo Plan Channel Widening Footprint"
+      visibility="PUBLIC"
+      geometryType="POLYGON"
+      isGeometryEditable="true">
+    </type>
+
+    <type
+      code="ComboPlanPropGravel"
+      label="Combo Plan Proposed Gravel Augmentation"
+      description="Combo Plan Proposed Gravel Augmentation"
+      visibility="PUBLIC"
+      geometryType="POLYGON"
+      isGeometryEditable="true">
+    </type>
+
+    <type
+      code="ComboPlanPropRiprap"
+      label="Combo Plan Proposed Riprap"
+      description="Combo Plan Proposed Riprap"
+      visibility="PUBLIC"
+      geometryType="POLYGON"
+      isGeometryEditable="true">
+    </type>
+
+    <type
+      code="ProjectReach"
+      label="Project Reach"
+      description="Project Reach"
+      visibility="PUBLIC"
+      geometryType="POLYGON"
+      isGeometryEditable="true">
+    </type>
+
+    <type
+      code="ProjectArea"
+      label="Project Area"
+      description="Project Area"
+      visibility="PUBLIC"
+      geometryType="POLYGON"
+      isGeometryEditable="true">
+    </type>
+
+    <type
+      code="Structure"
+      label="Structure"
+      description="Structure"
+      visibility="PUBLIC"
+      geometryType="POINT"
+      isGeometryEditable="true">
+    </type>
+
+    <type
+      code="CensusBlock"
+      label="Census Block"
+      description="Census Block"
+      visibility="PUBLIC"
+      geometryType="POLYGON"
+      isGeometryEditable="true">
+      <attributes>
+        <integer
+          code="totalPop"
+          label="Total Population"
+          description="Total Population" />
+        <integer
+          code="raceWhite"
+          label="Population By Race (White)"
+          description="Population By Race (White)" />
+        <integer
+          code="raceBlack"
+          label="Population By Race (Black)"
+          description="Population By Race (Black)" />
+        <integer
+          code="raceAsian"
+          label="Population By Race (Asian)"
+          description="Population By Race (Asian)" />
+        <integer
+          code="raceHispanic"
+          label="Population By Race (Hispanic)"
+          description="Population By Race (Hispanic)" />
+        <integer
+          code="raceOther"
+          label="Population By Race (Other)"
+          description="Population By Race (Other)" />
+
+      </attributes>
+
+    </type>
+
+
+    <dag
+      code="HasFloodRisk"
+      label="Has Flood Risk"
+      description="Edge denoting the location is at risk during the attached flood scenario" />
+
+    <dag
+      code="FlowsInto"
+      label="Flows Into"
+      description="Edge denoting a water location flows into another water location" />
+
+    <dag
+      code="LocatedIn"
+      label="Located In"
+      description="Edge denoting one location is within another location" />
+
+
+  </organization>
+
+</CGR>
