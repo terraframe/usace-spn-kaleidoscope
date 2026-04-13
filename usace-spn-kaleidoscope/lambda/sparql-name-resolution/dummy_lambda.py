@@ -22,7 +22,6 @@ def execute(name: str) -> list:
 
       {{
         (?s ?score) text:query (rdfs:label ?search) .
-        ?s lpg:GeoObject-code ?search .
       }}
       UNION
       {{

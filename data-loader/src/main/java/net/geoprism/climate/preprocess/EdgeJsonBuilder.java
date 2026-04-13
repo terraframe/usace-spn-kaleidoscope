@@ -275,6 +275,7 @@ public class EdgeJsonBuilder
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.CP_BRIDGE, ExpectedType.CP_CHANNEL_FTPRNT, ExpectedType.CP_FLOODWALL, ExpectedType.CP_PROP_GRAVEL, ExpectedType.CP_PROP_RIPRAP, ExpectedType.CP_SLOPE_REPAIR }, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.STRUCTURE }, new ExpectedType[] { ExpectedType.PROJECT_AREA, ExpectedType.LAND_PARCEL }, new ST_WITHIN());
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.ROAD, ExpectedType.LAKE}, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
+    generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.CENSUS_BLOCK }, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
 
     writeEdgesToFile(directory, ExpectedGraphType.LOCATED_IN, "located-in.json", edges);
   }

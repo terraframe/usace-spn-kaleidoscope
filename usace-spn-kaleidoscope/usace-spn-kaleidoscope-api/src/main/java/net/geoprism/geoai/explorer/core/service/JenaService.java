@@ -45,21 +45,20 @@ import net.geoprism.geoai.explorer.core.model.LocationPage;
 
 @Service
 public class JenaService {
-	public static final String OBJECT_PRFIX = "https://localhost:4200/lpg/graph_801104/0/rdfs#";
+	public static final String OBJECT_PRFIX = "https://spn.geoprism.net#";
 
 	public static final String PREFIXES = """
-				PREFIX lpgs: <https://localhost:4200/lpg/rdfs#>
-				PREFIX lpg: <https://localhost:4200/lpg#>
-				PREFIX lpgv: <https://localhost:4200/lpg/graph_801104/0#>
-				PREFIX lpgvs: <https://localhost:4200/lpg/graph_801104/0/rdfs#>
+				PREFIX lpg: <https://spn.geoprism.net#>
 				PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 				PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 				PREFIX spatialF: <http://jena.apache.org/function/spatial#>
+				PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+
 			""";
 
 	public static String ATTRIBUTES_QUERY = PREFIXES + """
 			SELECT ?s ?p ?o
-			FROM <https://localhost:4200/lpg/graph_801104/0#>
+			FROM <https://spn.geoprism.net/spn>
 			WHERE {
 			  BIND(?uri as ?s) .
 			  ?s ?p ?o .
@@ -67,7 +66,7 @@ public class JenaService {
 
 	public static String ATTRIBUTES_WITH_GEOMETRY_QUERY = PREFIXES + """
 			SELECT *
-			FROM <https://localhost:4200/lpg/graph_801104/0#>
+			FROM <https://spn.geoprism.net/spn>
 			WHERE {
 			  {
 			    SELECT ?s ?p ?o WHERE {
@@ -89,13 +88,11 @@ public class JenaService {
 			""";
 
 	public static String NEIGHBOR_QUERY = PREFIXES + """
-					PREFIX lpgs: <https://localhost:4200/lpg/rdfs#>
-					PREFIX lpg: <https://localhost:4200/lpg#>
-					PREFIX lpgv: <https://localhost:4200/lpg/graph_801104/0#>
-					PREFIX lpgvs: <https://localhost:4200/lpg/graph_801104/0/rdfs#>
+                    PREFIX lpg: <https://spn.geoprism.net#>
 					PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 					PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 					PREFIX spatialF: <http://jena.apache.org/function/spatial#>
+					PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
 
 					SELECT
 					?gf1 ?ft1 ?f1 ?wkt1 ?lbl1 ?code1 # Source Object
@@ -103,15 +100,15 @@ public class JenaService {
 					?gf2 ?ft2 ?f2 ?wkt2 ?lbl2 ?code2 # Outgoing Vertex (f1 → f2)
 					?e2 ?ev2 # Incoming Edge
 					?gf3 ?ft3 ?f3 ?wkt3 ?lbl3 ?code3 # Incoming Vertex (f3 → f1)
-					FROM lpgv:
+					FROM <https://spn.geoprism.net/spn>
 					WHERE {
 						BIND(geo:Feature as ?gf1) .
 						BIND(?uri as ?f1) .
 
 						# Source Object
-						?f1 a ?ft1 .
+						?f1 rdf:type ?ft1 .
 						?f1 rdfs:label ?lbl1 .
-						?f1 lpgs:GeoObject-code ?code1 .
+						?f1 lpg:GeoObject-code ?code1 .
 
 						OPTIONAL {
 							?f1 geo:hasGeometry ?g1 .
@@ -121,10 +118,10 @@ public class JenaService {
 						{
 							# Outgoing Relationship
 							?f1 ?e1 ?f2 .
-							?f2 a ?ft2 .
+							?f2 rdf:type ?ft2 .
 							###TYPE_FILTER_FILTER1###
 							?f2 rdfs:label ?lbl2 .
-							?f2 lpgs:GeoObject-code ?code2 .
+							?f2 lpg:GeoObject-code ?code2 .
 
 							BIND(geo:Feature as ?gf2) .
 							BIND(?f2 as ?ev1) .
@@ -138,10 +135,10 @@ public class JenaService {
 						{
 							# Incoming Relationship
 							?f3 ?e2 ?f1 .
-							?f3 a ?ft3 .
+							?f3 rdf:type ?ft3 .
 							###TYPE_FILTER_FILTER2###
 							?f3 rdfs:label ?lbl3 .
-							?f3 lpgs:GeoObject-code ?code3 .
+							?f3 lpg:GeoObject-code ?code3 .
 
 							BIND(geo:Feature as ?gf3) .
 							BIND(?f3 as ?ev2) .
@@ -156,35 +153,33 @@ public class JenaService {
 			""";
 
 	public static String NEIGHBOR_METADATA_QUERY = PREFIXES + """
-					PREFIX lpgs: <https://localhost:4200/lpg/rdfs#>
-			PREFIX lpg: <https://localhost:4200/lpg#>
-			PREFIX lpgv: <https://localhost:4200/lpg/graph_801104/0#>
-			PREFIX lpgvs: <https://localhost:4200/lpg/graph_801104/0/rdfs#>
+            PREFIX lpg: <https://spn.geoprism.net#>
 			PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 			PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+			PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
 
 			SELECT ?type (COUNT(DISTINCT ?obj) AS ?count)
-			FROM lpgv:
+			FROM <https://spn.geoprism.net/spn>
 			WHERE {
 			  {
 			    # Type of source object
 			    BIND(?uri AS ?obj)
-			    ?obj a ?type .
-			    ?obj lpgs:GeoObject-code ?code .
+			    ?obj rdf:type ?type .
+			    ?obj lpg:GeoObject-code ?code .
 			  }
 			  UNION
 			  {
 			    # Outgoing object types
 			    ?uri ?p1 ?obj .
-			    ?obj a ?type .
-			    ?obj lpgs:GeoObject-code ?code .
+			    ?obj rdf:type ?type .
+			    ?obj lpg:GeoObject-code ?code .
 			  }
 			  UNION
 			  {
 			    # Incoming object types
 			    ?obj ?p2 ?uri .
-			    ?obj a ?type .
-			    ?obj lpgs:GeoObject-code ?code .
+			    ?obj rdf:type ?type .
+			    ?obj lpg:GeoObject-code ?code .
 			  }
 			}
 			GROUP BY ?type
@@ -192,18 +187,19 @@ public class JenaService {
 					""";
 
 	public static String FULL_TEXT_LOOKUP = PREFIXES + """
-					PREFIX   ex: <https://localhost:4200/lpg/graph_801104/0/rdfs#>
 			      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 			      PREFIX text: <http://jena.apache.org/text#>
-			      PREFIX lpgs: <https://localhost:4200/lpg/rdfs#>
+                  PREFIX lpg: <https://spn.geoprism.net#>
+                  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+
 
 			      SELECT ?uri ?type ?code ?label ?wkt
-			      FROM <https://localhost:4200/lpg/graph_801104/0#>
+			      FROM <https://spn.geoprism.net/spn>
 			      WHERE {{
 			        (?uri ?score) text:query (rdfs:label ?query) .
-			        ?uri lpgs:GeoObject-code ?code .
+			        ?uri lpg:GeoObject-code ?code .
 			        ?uri rdfs:label ?label .
-			        ?uri a ?type .
+			        ?uri rdf:type ?type .
 			        OPTIONAL {
 			            ?uri geo:hasGeometry ?g .
 			            ?g geo:asWKT ?wkt .

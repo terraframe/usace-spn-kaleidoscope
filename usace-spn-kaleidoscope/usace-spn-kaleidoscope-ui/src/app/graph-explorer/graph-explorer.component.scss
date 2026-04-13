@@ -1,0 +1,47 @@
+#graph-container {
+    background-color: white;
+}
+
+#graph-main {
+    position: relative;
+
+    // ng prime's tab panel has some sort of animation which causes us to slowly change height and glitch out
+    // height: calc(50dvh - 9em);
+    height: 100%;
+}
+
+.graph-hidden {
+    visibility: hidden;
+}
+
+.stretch {
+    width: 100%;
+    height: 100%;
+}
+
+svg text {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.legend {
+    position: fixed;
+    bottom: 0px;
+    left: -2px;
+    background-color: var(--p-content-background);
+    padding: 5px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+}
+
+.legend-item {
+    margin-bottom: 2px;
+}
+
+.square {
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+}
