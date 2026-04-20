@@ -29,6 +29,7 @@ import net.geoprism.climate.model.ExpectedType;
 import net.geoprism.data.importer.BasicColumnFunction;
 import net.geoprism.data.importer.ShapefileFunction;
 import net.geoprism.registry.graph.DataSource;
+import net.geoprism.registry.io.ConstantShapefileFunction;
 import net.geoprism.registry.service.business.DataSourceBusinessServiceIF;
 
 @Service
@@ -130,12 +131,18 @@ public class InstanceDataBuilderService
     datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "Creeks"), ExpectedType.CREEK, buildAttributeMapping("NAME", "ID"), params.ignoreFeedback, params.source));
     datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "Land_Parcels"), ExpectedType.LAND_PARCEL, buildAttributeMapping("APN", "APN", //
         new Pair<String, String>("landUse", "LANDUSE"), //
+        new Pair<String, String>("lotAcres", "LOTACRES"), //
+        new Pair<String, String>("estimatedValue", "Value"), //
         new Pair<String, String>("mailAddress", "MAILADDR") //
     ), params.ignoreFeedback, params.source));
-    datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "UG_100yr_ShallowDep_LowVel"), ExpectedType.FLOOD_SCENARIO, buildAttributeMapping("Id", "Id", //
+    datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "basic_scenario"), ExpectedType.FLOOD_SCENARIO, buildAttributeMapping("Label", "Code", //
         new Pair<String, String>("depth", "Depth"), //
         new Pair<String, String>("velocity", "Velocity") //
     ), params.ignoreFeedback, params.source));
+    datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "combo_scenario"), ExpectedType.FLOOD_SCENARIO, buildAttributeMapping("Label", "Code", //
+        new Pair<String, String>("depth", "Depth"), //
+        new Pair<String, String>("velocity", "Velocity") //
+        ), params.ignoreFeedback, params.source));
     datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "UG_Lakes"), ExpectedType.LAKE, buildAttributeMapping("NAME", "ID"), params.ignoreFeedback, params.source));
     datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "UG_MajRoads"), ExpectedType.ROAD, buildAttributeMapping("HWYNAME", "ID"), params.ignoreFeedback, params.source));
     datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "UpperGuad_ProjectReaches"), ExpectedType.PROJECT_REACH, buildAttributeMapping("Reach_1", "Reach_1"), params.ignoreFeedback, params.source));
@@ -167,6 +174,7 @@ public class InstanceDataBuilderService
     datasets.add(new EdgeObjectDataset(getEdgeResource(params, "flood-risk"), ExpectedGraphType.HAS_FLOOD_RISK, params.source, true));
     datasets.add(new EdgeObjectDataset(getEdgeResource(params, "flows-into"), ExpectedGraphType.FLOWS_INTO, params.source, true));
     datasets.add(new EdgeObjectDataset(getEdgeResource(params, "located-in"), ExpectedGraphType.LOCATED_IN, params.source, true));
+    datasets.add(new EdgeObjectDataset(getEdgeResource(params, "has_mitigation"), ExpectedGraphType.HAS_MITIGATION, params.source, true));
 
     return datasets;
   }
@@ -181,6 +189,16 @@ public class InstanceDataBuilderService
     return attributeColumnMapping;
   }
 
+  private Map<String, ShapefileFunction> buildAttributeMapping(ShapefileFunction label, String code)
+  {
+    Map<String, ShapefileFunction> attributeColumnMapping = new HashMap<String, ShapefileFunction>();
+    
+    attributeColumnMapping.put(GeoObject.CODE, new BasicColumnFunction(code));
+    attributeColumnMapping.put(GeoObject.DISPLAY_LABEL, label);
+    
+    return attributeColumnMapping;
+  }
+  
   @SafeVarargs
   private Map<String, ShapefileFunction> buildAttributeMapping(String label, String code, Pair<String, String>... mappings)
   {
@@ -197,6 +215,22 @@ public class InstanceDataBuilderService
     return attributeColumnMapping;
   }
 
+  @SafeVarargs
+  private Map<String, ShapefileFunction> buildAttributeMapping(ShapefileFunction label, String code, Pair<String, String>... mappings)
+  {
+    Map<String, ShapefileFunction> attributeColumnMapping = new HashMap<String, ShapefileFunction>();
+    
+    attributeColumnMapping.put(GeoObject.CODE, new BasicColumnFunction(code));
+    attributeColumnMapping.put(GeoObject.DISPLAY_LABEL, label);
+    
+    for (Pair<String, String> mapping : mappings)
+    {
+      attributeColumnMapping.put(mapping.getFirst(), new BasicColumnFunction(mapping.getSecond()));
+    }
+    
+    return attributeColumnMapping;
+  }
+  
   protected ApplicationResource getRawShapefileResource(Params params, String fileName) throws MalformedURLException
   {
     return this.getRawShapefileResource(params, USACE_SPN, "files", fileName);

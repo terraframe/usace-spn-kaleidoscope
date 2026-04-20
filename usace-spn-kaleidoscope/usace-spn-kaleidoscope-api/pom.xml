@@ -258,10 +258,13 @@
               <outputDirectory>${project.build.directory}/classes/static/</outputDirectory>
               <resources>
                 <resource>
-                  <directory>
-                    ${project.basedir}/../usace-spn-kaleidoscope-ui/dist/usace-spn-kaleidoscope/browser/</directory>
+                  <directory>${project.basedir}/../usace-spn-kaleidoscope-ui/dist/usace-spn-kaleidoscope/browser/</directory>
                   <filtering>false</filtering>
                 </resource>
+                <resource>
+                  <directory>${project.basedir}/../usace-spn-kaleidoscope-ui/dist/usace-spn-kaleidoscope</directory>
+                  <include>3rdpartylicenses.txt</include>
+                </resource>                
               </resources>
             </configuration>
           </execution>

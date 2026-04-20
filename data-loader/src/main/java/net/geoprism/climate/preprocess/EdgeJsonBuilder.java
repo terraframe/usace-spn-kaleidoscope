@@ -53,27 +53,6 @@ public class EdgeJsonBuilder
     public ResultSet generate(ListTypeVersion sourceVersion, ListTypeVersion targetVersion);
   }
 
-  private static class FLOWS_THROUGH implements QueryBuilder
-  {
-
-    @Override
-    public ResultSet generate(ListTypeVersion sourceVersion, ListTypeVersion targetVersion)
-    {
-      // Within a 1000 meters of each other
-
-      StringBuilder sql = new StringBuilder();
-      sql.append("SELECT st.code, wa.code");
-      sql.append(" FROM " + sourceVersion.getMdBusiness().getTableName() + " AS st,");
-      sql.append(" " + targetVersion.getMdBusiness().getTableName() + " AS wa");
-      sql.append(" WHERE st.code != wa.code");
-      sql.append(" AND ST_OVERLAPS(wa.geom, ST_Envelope(st.geom)) = true");
-      // sql.append(" AND ST_DWithin(wa.geom, st.geom, 0.01, false) = true ");
-      // sql.append(" AND ST_OVERLAPS(ST_Envelope(wa.geom), st.geom) = true");
-
-      return Database.query(sql.toString());
-    }
-  }
-
   private static class ST_OVERLAPS implements QueryBuilder
   {
 
@@ -94,7 +73,7 @@ public class EdgeJsonBuilder
 
   private static class ST_CONTAINS implements QueryBuilder
   {
-    
+
     @Override
     public ResultSet generate(ListTypeVersion sourceVersion, ListTypeVersion targetVersion)
     {
@@ -104,11 +83,33 @@ public class EdgeJsonBuilder
       sql.append(" " + targetVersion.getMdBusiness().getTableName() + " AS wa");
       sql.append(" WHERE st.code != wa.code");
       sql.append(" AND ST_CONTAINS(st.geom, wa.geom) = true");
-      
+
       return Database.query(sql.toString());
     }
   }
-  
+
+  private static class HAS_SOURCE_CODE implements QueryBuilder
+  {
+    private String code;
+
+    public HAS_SOURCE_CODE(String code)
+    {
+      this.code = code;
+    }
+
+    @Override
+    public ResultSet generate(ListTypeVersion sourceVersion, ListTypeVersion targetVersion)
+    {
+      StringBuilder sql = new StringBuilder();
+      sql.append("SELECT st.code, wa.code");
+      sql.append(" FROM " + sourceVersion.getMdBusiness().getTableName() + " AS st,");
+      sql.append(" " + targetVersion.getMdBusiness().getTableName() + " AS wa");
+      sql.append(" WHERE st.code = '" + this.code + "'");
+
+      return Database.query(sql.toString());
+    }
+  }
+
   private static class ST_WITHIN implements QueryBuilder
   {
 
@@ -162,6 +163,7 @@ public class EdgeJsonBuilder
 
     this.createIndexes();
 
+    generateHasMitigtaion(directory);
     generateFloodRisk(directory);
     generateFlowsInto(directory);
     generateLocatedIn(directory);
@@ -238,15 +240,25 @@ public class EdgeJsonBuilder
     System.out.println("Finished creating indexes");
   }
 
+  private void generateHasMitigtaion(File directory) throws IOException
+  {
+    System.out.println("Generating At Flood Risk.");
+
+    final JsonArray edges = new JsonArray();
+
+    generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.FLOOD_SCENARIO }, new ExpectedType[] { ExpectedType.CP_BRIDGE, ExpectedType.CP_CHANNEL_FTPRNT, ExpectedType.CP_FLOODWALL, ExpectedType.CP_PROP_GRAVEL, ExpectedType.CP_PROP_RIPRAP, ExpectedType.CP_SLOPE_REPAIR }, new HAS_SOURCE_CODE("2"));
+
+    writeEdgesToFile(directory, ExpectedGraphType.HAS_MITIGATION, "has_mitigation.json", edges);
+  }
+
   private void generateFloodRisk(File directory) throws IOException
   {
     System.out.println("Generating At Flood Risk.");
 
     final JsonArray edges = new JsonArray();
 
-    generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.FLOOD_SCENARIO }, new ExpectedType[] { ExpectedType.CP_BRIDGE, ExpectedType.CP_CHANNEL_FTPRNT, ExpectedType.CP_FLOODWALL, ExpectedType.CP_PROP_GRAVEL, ExpectedType.CP_PROP_RIPRAP, ExpectedType.CP_SLOPE_REPAIR }, new ST_CONTAINS());
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.FLOOD_SCENARIO }, new ExpectedType[] { ExpectedType.CENSUS_BLOCK }, new ST_OVERLAPS());
-    generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.FLOOD_SCENARIO }, new ExpectedType[] { ExpectedType.STRUCTURE, ExpectedType.ROAD }, new ST_CONTAINS());
+    generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.FLOOD_SCENARIO }, new ExpectedType[] { ExpectedType.ROAD }, new ST_CONTAINS());
 
     writeEdgesToFile(directory, ExpectedGraphType.HAS_FLOOD_RISK, "flood-risk.json", edges);
   }
@@ -274,7 +286,7 @@ public class EdgeJsonBuilder
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.PROJECT_REACH }, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.CP_BRIDGE, ExpectedType.CP_CHANNEL_FTPRNT, ExpectedType.CP_FLOODWALL, ExpectedType.CP_PROP_GRAVEL, ExpectedType.CP_PROP_RIPRAP, ExpectedType.CP_SLOPE_REPAIR }, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.STRUCTURE }, new ExpectedType[] { ExpectedType.PROJECT_AREA, ExpectedType.LAND_PARCEL }, new ST_WITHIN());
-    generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.ROAD, ExpectedType.LAKE}, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
+    generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.ROAD, ExpectedType.LAKE }, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.CENSUS_BLOCK }, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
 
     writeEdgesToFile(directory, ExpectedGraphType.LOCATED_IN, "located-in.json", edges);

@@ -27,6 +27,16 @@
           code="mailAddress"
           label="Mail Address"
           description="Mail Address" />          
+        <decimal
+          code="lotAcres"
+          label="Lost Acres"
+          description="Lot Acres"
+          precision="10"
+          scale="4" />          
+        <integer
+          code="estimatedValue"
+          label="Estimated Value"
+          description="Estimated Value" />
       </attributes>
       
     </type>
@@ -203,6 +213,11 @@
       code="LocatedIn"
       label="Located In"
       description="Edge denoting one location is within another location" />
+
+    <dag
+      code="HasMitigation"
+      label="Has Mitigation"
+      description="Edge denoting the proposed mitigation changes associated with a scenario" />
 
 
   </organization>

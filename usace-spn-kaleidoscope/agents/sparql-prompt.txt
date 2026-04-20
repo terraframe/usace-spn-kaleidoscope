@@ -66,7 +66,7 @@ The graph contains a vast wealth of location data.
 =
 Types
 =
-A CSV list of (graph, type) pairs. This is the full list of rdf:type within the database.
+This is the full list of rdf:type within the database.
 
 lpg:Creek
 lpg:LandParcel
@@ -92,16 +92,16 @@ Edges
 A list of relationships between types. The relationship format is described as (SourceType)->[EdgeType]->(TargetType) and is directional from left to right. If a relationship is bi-directional it will be listed twice, one in each direction.
 
 
-(lpg:FloodScenario)->[lpg:HasFloodRisk]->(lpg:ComboPlanBridge)
-(lpg:FloodScenario)->[lpg:HasFloodRisk]->(lpg:ComboPlanFloodwall)
-(lpg:FloodScenario)->[lpg:HasFloodRisk]->(lpg:ComboPlanSlopeRepair)
-(lpg:FloodScenario)->[lpg:HasFloodRisk]->(lpg:ComboPlanChannelFtprnt)
-(lpg:FloodScenario)->[lpg:HasFloodRisk]->(lpg:ComboPlanPropGravel)
-(lpg:FloodScenario)->[lpg:HasFloodRisk]->(lpg:ComboPlanPropRiprap)
 (lpg:FloodScenario)->[lpg:HasFloodRisk]->(lpg:CensusBlock)
-(lpg:FloodScenario)->[lpg:HasFloodRisk]->(lpg:Structure)
 (lpg:FloodScenario)->[lpg:HasFloodRisk]->(lpg:Road)
 (lpg:FloodScenario)->[lpg:HasFloodRisk]->(lpg:LandParcel)
+
+(lpg:FloodScenario)->[lpg:HasMitigation]->(lpg:ComboPlanBridge)
+(lpg:FloodScenario)->[lpg:HasMitigation]->(lpg:ComboPlanFloodwall)
+(lpg:FloodScenario)->[lpg:HasMitigation]->(lpg:ComboPlanSlopeRepair)
+(lpg:FloodScenario)->[lpg:HasMitigation]->(lpg:ComboPlanChannelFtprnt)
+(lpg:FloodScenario)->[lpg:HasMitigation]->(lpg:ComboPlanPropGravel)
+(lpg:FloodScenario)->[lpg:HasMitigation]->(lpg:ComboPlanPropRiprap)
 
 (lpg:ComboPlanBridge)->[lpg:LocatedIn]->(lpg:ProjectArea)
 (lpg:ComboPlanFloodwall)->[lpg:LocatedIn]->(lpg:ProjectArea)
@@ -123,10 +123,10 @@ lpg:Creek, lpg:Lake, lpg:ProjectReach.
 Examples:
 
 Valid:
-?scenario lpg:HasFloodRisk ?structure .
+?scenario lpg:HasFloodRisk ?censusBlock .
 
 INVALID:
-?structure lpg:HasFloodRisk ?scenario .
+?censusBlock lpg:HasFloodRisk ?scenario .
 
 Why?
 Because you did not respect the order of the relationship!
@@ -147,9 +147,17 @@ The following types contain domain specific attribution, where the type is liste
 
 lpg:LandParcel, lpg:LandParcel-mailAddress, String literal. Specifies the mail address the land parcel
 lpg:LandParcel, lpg:LandParcel-landUse, String literal. Specifies the use of land parcel
-lpg:CensusBlock, lpg:CensusBlock-totalPop, Number. Total Population in the census block.
+lpg:LandParcel, lpg:LandParcel-lotAcres, Number. Specifies the total acres of the parcel
+lpg:LandParcel, lpg:LandParcel-estimatedValue, Number. Specifies the estimated value in dollars of the parcel
 
-When answering questions about population, you need to use CensusBlock-totalPop.
+lpg:CensusBlock, lpg:CensusBlock-totalPop, Number. Total Population in the census block.
+lpg:CensusBlock, lpg:CensusBlock-raceWhite, Number. The amount of population which identifies as White.
+lpg:CensusBlock, lpg:CensusBlock-raceBlack, Number. The amount of population which identifies as Black.
+lpg:CensusBlock, lpg:CensusBlock-raceAsian, Number. The amount of population which identifies as Asian.
+lpg:CensusBlock, lpg:CensusBlock-raceHispanic, Number. The amount of population which identifies as Hispanic.
+lpg:CensusBlock, lpg:CensusBlock-raceOther, Number. The amount of population which identifies as Other .
+
+When answering questions about population, you need to use CensusBlock-totalPop.  If asking about a specific race demographic use the appropriate race value.
 
 
 =

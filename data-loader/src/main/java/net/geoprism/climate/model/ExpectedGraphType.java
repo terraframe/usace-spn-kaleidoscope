@@ -9,11 +9,13 @@ import net.geoprism.registry.service.business.UndirectedGraphTypeBusinessService
 
 public class ExpectedGraphType extends ExpectedMetadata
 {
-  public static final ExpectedGraphType HAS_FLOOD_RISK = new ExpectedGraphType("HasFloodRisk", true);
+  public static final ExpectedGraphType HAS_FLOOD_RISK   = new ExpectedGraphType("HasFloodRisk", true);
 
-  public static final ExpectedGraphType FLOWS_INTO     = new ExpectedGraphType("FlowsInto", true);
+  public static final ExpectedGraphType FLOWS_INTO       = new ExpectedGraphType("FlowsInto", true);
 
-  public static final ExpectedGraphType LOCATED_IN     = new ExpectedGraphType("LocatedIn", true);
+  public static final ExpectedGraphType LOCATED_IN       = new ExpectedGraphType("LocatedIn", true);
+
+  public static final ExpectedGraphType HAS_MITIGATION = new ExpectedGraphType("HasMitigation", true);
 
   private boolean                       isDirected;
 
