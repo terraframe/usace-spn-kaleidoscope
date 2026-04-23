@@ -33,10 +33,12 @@
           description="Lot Acres"
           precision="10"
           scale="4" />          
-        <integer
-          code="estimatedValue"
-          label="Estimated Value"
-          description="Estimated Value" />
+<!--         
+       <integer
+         code="estimatedValue"
+         label="Estimated Value"
+         description="Estimated Value" />
+ -->      
       </attributes>
       
     </type>
@@ -159,8 +161,43 @@
       visibility="PUBLIC"
       geometryType="POINT"
       isGeometryEditable="true">
-    </type>
+      <attributes>
+        <text
+          code="structureType"
+          label="Structure Type"
+          description="Structure Type" />
+        <decimal
+          code="valStruct"
+          label="Value of Structure"
+          description="Value of Structure"
+          precision="10"
+          scale="2" />          
+        <decimal
+          code="valContents"
+          label="Value of Contents"
+          description="Value of Contents"
+          precision="10"
+          scale="2" />                    
+        <integer
+          code="pop2amu65"
+          label="Population under 65 (AM)"
+          description="Population at night for the structure of people under the age of 65." />
+        <integer
+          code="pop2amo65"
+          label="Population over 65 (AM)"
+          description="Population at night for the structure of people over the age of 65." />
+        <integer
+          code="pop2pmu65"
+          label="Population under 65 (PM)"
+          description="Population during the day for the structure of people under the age of 65." />
+        <integer
+          code="pop2pmo65"
+          label="Population over 65 (PM)"
+          description="Population during the day for the structure of people over the age of 65." />
 
+      </attributes>      
+    </type>
+<!-- 
     <type
       code="CensusBlock"
       label="Census Block"
@@ -198,7 +235,7 @@
 
     </type>
 
-
+ -->
     <dag
       code="HasFloodRisk"
       label="Has Flood Risk"

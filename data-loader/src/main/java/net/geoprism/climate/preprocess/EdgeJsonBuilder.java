@@ -161,12 +161,12 @@ public class EdgeJsonBuilder
 
     File directory = new File(cmd.getOptionValue("out_path", "files/usace-spn/edges/"));
 
-    this.createIndexes();
-
-    generateHasMitigtaion(directory);
-    generateFloodRisk(directory);
-    generateFlowsInto(directory);
-    generateLocatedIn(directory);
+//    this.createIndexes();
+//
+//    generateHasMitigtaion(directory);
+//    generateFloodRisk(directory);
+//    generateFlowsInto(directory);
+//    generateLocatedIn(directory);
   }
 
   private void publishLists()
@@ -257,7 +257,7 @@ public class EdgeJsonBuilder
 
     final JsonArray edges = new JsonArray();
 
-    generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.FLOOD_SCENARIO }, new ExpectedType[] { ExpectedType.CENSUS_BLOCK }, new ST_OVERLAPS());
+//    generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.FLOOD_SCENARIO }, new ExpectedType[] { ExpectedType.CENSUS_BLOCK }, new ST_OVERLAPS());
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.FLOOD_SCENARIO }, new ExpectedType[] { ExpectedType.ROAD }, new ST_CONTAINS());
 
     writeEdgesToFile(directory, ExpectedGraphType.HAS_FLOOD_RISK, "flood-risk.json", edges);
@@ -287,7 +287,7 @@ public class EdgeJsonBuilder
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.CP_BRIDGE, ExpectedType.CP_CHANNEL_FTPRNT, ExpectedType.CP_FLOODWALL, ExpectedType.CP_PROP_GRAVEL, ExpectedType.CP_PROP_RIPRAP, ExpectedType.CP_SLOPE_REPAIR }, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.STRUCTURE }, new ExpectedType[] { ExpectedType.PROJECT_AREA, ExpectedType.LAND_PARCEL }, new ST_WITHIN());
     generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.ROAD, ExpectedType.LAKE }, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
-    generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.CENSUS_BLOCK }, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
+//    generateJsonForTypes(edges, new ExpectedType[] { ExpectedType.CENSUS_BLOCK }, new ExpectedType[] { ExpectedType.PROJECT_AREA }, new ST_WITHIN());
 
     writeEdgesToFile(directory, ExpectedGraphType.LOCATED_IN, "located-in.json", edges);
   }

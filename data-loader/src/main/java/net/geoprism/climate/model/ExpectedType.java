@@ -32,7 +32,7 @@ public class ExpectedType extends ExpectedMetadata
 
   public static final ExpectedType STRUCTURE         = new ExpectedType("Structure");
 
-  public static final ExpectedType CENSUS_BLOCK      = new ExpectedType("CensusBlock");
+//  public static final ExpectedType CENSUS_BLOCK      = new ExpectedType("CensusBlock");
 
   public ExpectedType(String code, String... attributes)
   {
@@ -41,7 +41,7 @@ public class ExpectedType extends ExpectedMetadata
 
   public static ExpectedType[] getAll()
   {
-    return new ExpectedType[] { CENSUS_BLOCK, STRUCTURE, PROJECT_AREA, PROJECT_REACH, CREEK, LAND_PARCEL, FLOOD_SCENARIO, LAKE, ROAD, CP_BRIDGE, CP_FLOODWALL, CP_SLOPE_REPAIR, CP_CHANNEL_FTPRNT, CP_PROP_GRAVEL, CP_PROP_RIPRAP };
+    return new ExpectedType[] { STRUCTURE, PROJECT_AREA, PROJECT_REACH, CREEK, LAND_PARCEL, FLOOD_SCENARIO, LAKE, ROAD, CP_BRIDGE, CP_FLOODWALL, CP_SLOPE_REPAIR, CP_CHANNEL_FTPRNT, CP_PROP_GRAVEL, CP_PROP_RIPRAP };
   }
 
   public ServerGeoObjectType getServerObject()

@@ -147,14 +147,24 @@ public class InstanceDataBuilderService
     datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "UG_MajRoads"), ExpectedType.ROAD, buildAttributeMapping("HWYNAME", "ID"), params.ignoreFeedback, params.source));
     datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "UpperGuad_ProjectReaches"), ExpectedType.PROJECT_REACH, buildAttributeMapping("Reach_1", "Reach_1"), params.ignoreFeedback, params.source));
     datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "UpperGuad_ProjectArea_Buffer1000ft"), ExpectedType.PROJECT_AREA, buildAttributeMapping("Label", "OBJECTID"), params.ignoreFeedback, params.source));
-    datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "UG_StrucsOnly_Ind_0824"), ExpectedType.STRUCTURE, buildAttributeMapping("Struc_Name", "Struc_Name"), params.ignoreFeedback, params.source));
-    datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "Demographics_by_Census_Block_CLIPPED"), ExpectedType.CENSUS_BLOCK, buildAttributeMapping("FACILITYID", "FACILITYID", new Pair<String, String>("totalPop", "POPTOTAL"), //
-        new Pair<String, String>("raceWhite", "RACEWHITE"), //
-        new Pair<String, String>("raceBlack", "RACEBLACK"), //
-        new Pair<String, String>("raceAsian", "RACEASIAN"), //
-        new Pair<String, String>("raceOther", "RACEOTHER"), //
-        new Pair<String, String>("raceHispanic", "RACEHISPAN") //
-    ), params.ignoreFeedback, params.source));
+    datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "Nation_Structure_Inventory_Upper_Guadalupe_clip_to_500yr_flood_parcels_2"), ExpectedType.STRUCTURE, buildAttributeMapping("bid", "fid",
+      new Pair<String, String>("structureType", "st_damcat"), //
+      new Pair<String, String>("valStruct", "val_struct"), //
+      new Pair<String, String>("valContents", "val_cont"), //
+      new Pair<String, String>("pop2amu65", "pop2amu65"), //
+      new Pair<String, String>("pop2amo65", "pop2amo65"), //
+      new Pair<String, String>("pop2pmu65", "pop2pmu65"), //
+      new Pair<String, String>("pop2pmo65", "pop2pmo65") //
+  ), params.ignoreFeedback, params.source));
+
+//    datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "UG_StrucsOnly_Ind_0824"), ExpectedType.STRUCTURE, buildAttributeMapping("Struc_Name", "Struc_Name"), params.ignoreFeedback, params.source));
+//    datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "Demographics_by_Census_Block_CLIPPED"), ExpectedType.CENSUS_BLOCK, buildAttributeMapping("FACILITYID", "FACILITYID", new Pair<String, String>("totalPop", "POPTOTAL"), //
+//        new Pair<String, String>("raceWhite", "RACEWHITE"), //
+//        new Pair<String, String>("raceBlack", "RACEBLACK"), //
+//        new Pair<String, String>("raceAsian", "RACEASIAN"), //
+//        new Pair<String, String>("raceOther", "RACEOTHER"), //
+//        new Pair<String, String>("raceHispanic", "RACEHISPAN") //
+//    ), params.ignoreFeedback, params.source));
 
     datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "ComboPlan_Bridges"), ExpectedType.CP_BRIDGE, buildAttributeMapping("ID", "ID"), params.ignoreFeedback, params.source));
     datasets.add(new GeoObjectDataset(DatasetType.SHAPEFILE, getRawShapefileResource(params, "ComboPlan_Floodwalls"), ExpectedType.CP_FLOODWALL, buildAttributeMapping("ID", "ID"), params.ignoreFeedback, params.source));
