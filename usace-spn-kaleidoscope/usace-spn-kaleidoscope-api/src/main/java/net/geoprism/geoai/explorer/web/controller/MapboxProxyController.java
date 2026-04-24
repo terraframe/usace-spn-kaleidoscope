@@ -43,7 +43,8 @@ public class MapboxProxyController {
         "access-control-expose-headers",
         "access-control-allow-credentials",
         "access-control-max-age",
-        "vary"
+        "vary",
+        ":status"
     );
 
     private final HttpClient httpClient;
@@ -51,6 +52,7 @@ public class MapboxProxyController {
 
     public MapboxProxyController(@Value("${mapbox.key}") String mapboxKey) {
         this.httpClient = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .build();
 
