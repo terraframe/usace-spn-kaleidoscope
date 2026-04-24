@@ -18,6 +18,7 @@
           </ng-container>
           <ng-container *ngIf="!msg.loading">
             <ng-container *ngFor="let section of msg.sections">
+
               <markdown *ngIf="section.type === 0" [data]="section.text"></markdown>  
 
               <!-- <span *ngIf="section.type === 0" [innerHTML]="section.text">
@@ -28,7 +29,6 @@
             </ng-container>
             
             <div class="action" *ngIf="msg.mappable">
-              <br />
               <p-button (onClick)="mapIt(msg)">View details</p-button>
             </div>
             <div class="action ambiguous" *ngIf="msg.ambiguous && last">

@@ -66,22 +66,22 @@ The graph contains a vast wealth of location data.
 =
 Types
 =
-This is the full list of rdf:type within the database.
+A CSV list of (type, description) pairs. This is the full list of rdf:type within the database.
 
-lpg:Creek
-lpg:LandParcel
-lpg:FloodScenario
-lpg:Lake
-lpg:Road
-lpg:ComboPlanBridge
-lpg:ComboPlanFloodwall
-lpg:ComboPlanSlopeRepair
-lpg:ComboPlanChannelFtprnt
-lpg:ComboPlanPropGravel
-lpg:ComboPlanPropRiprap
-lpg:ProjectReach
-lpg:ProjectArea
-lpg:Structure
+lpg:Creek, Contains creek data
+lpg:LandParcel, Contains land parcel data
+lpg:FloodScenario, Contains flood scenario data with different mitigation plans.
+lpg:Lake, Contains lake data
+lpg:Road, Contains road data
+lpg:ComboPlanBridge, Contains mitigation data for bridges
+lpg:ComboPlanFloodwall, Contains mitigation data for flood walls
+lpg:ComboPlanSlopeRepair, Contains mitigation data for slope repair
+lpg:ComboPlanChannelFtprnt, Contains mitigation data for channel foot prints
+lpg:ComboPlanPropGravel, Contains mitigation data for gravel
+lpg:ComboPlanPropRiprap, Contains mitigation data for riprap
+lpg:ProjectReach, List of channel reaches in the project 
+lpg:ProjectArea, List of different project areas
+lpg:Structure, List of structures
 
 
 =
@@ -157,9 +157,20 @@ lpg:Structure, lpg:Structure-pop2pmo65, Number. Population during the day for th
 The population at night and during the day are mutually exclusive and cannot be aggregated together.  Unless the user specifically asks for the population at night assume they are asking questions about the population during the day.
 
 =
+Flood Scenario
+=
+There are only two flood scenarios in the database:
+
+A flood scenario with the label 'No Mitigation Scenario' and a code of '1'.
+A flood scenario with the label 'Combo Plan Scenario' and a code of '2'
+
+If needed base on the chat history use these code when generating the SPARQL.
+
+=
 Flood Inundation
 =
-If the user asks 'Which objects are inundated', you ONLY need to consider these objects:
+If the user asks 'Which objects are at flood risk', you ONLY need to consider these objects:
+
 (lpg:FloodScenario)->[lpg:HasFloodRisk] -> ?object
 
 If the user asks about what Inundation scenarios are available, query lpg:FloodScenario and return the results (along with #mapit).
@@ -253,11 +264,11 @@ What is total value of structures at risk with the no mitigation scenario versus
 The following is a list of multi-shot examples of including the #mapIt
 
 =
-What is the total population in the project area with a code of 'Example Location'?
+What is the total population in the flood scenario with a code of '1'?
 =
 
 // Correct
-The total population in the project area with a code of 'Example Location' is 200. #mapIt
+The total population in the project area with a code of '1' is 200. #mapIt
 
 =
 What is the most common land use for parcels in the project area with a code of 'Example Location'?

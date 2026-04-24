@@ -1,7 +1,7 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withHashLocation } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { providePrimeNG } from 'primeng/config';
@@ -17,7 +17,7 @@ import { provideMarkdown } from 'ngx-markdown';
 export const appConfig: ApplicationConfig = {
     providers: [
         provideHttpClient(withInterceptors([authInterceptor])),
-        provideRouter(routes),
+        provideRouter(routes, withHashLocation()),
         provideAnimations(),
         provideAnimationsAsync(),
         provideMarkdown(),

@@ -4,40 +4,7 @@ import { ChatMessage } from '../models/chat.model';
 import { MockUtil } from '../mock-util';
 import { environment } from '../../environments/environment';
 
-/*
-Begin by introducing yourself as a geo-enabled RDF virtual assistant. List the features you are capable of helping the user with, including (but not limited to):
-- Finding an object by label, code, location or URI
-- Navigating a graph of relationships - for example “What is the total population impacted if channel reach CEMVK_RR_03_ONE_25 floods?”
-
-Finally, end by listing the types and edges inside the dataset.
-*/
-const initialMessage = `Hello! I'm your geo-enabled RDF virtual assistant, specialized in analyzing spatial and demographic data relationships. Here's what I can help you with:
-
-1. Location-based Queries:
-- Find objects by their name, code, or location
-- Get detailed information about schools, hospitals, levee areas, and channel reaches
-- Explore census tract data and population statistics
-
-2. Relationship Analysis:
-- Track water flow patterns through channel reaches
-- Identify flood risks and impacted areas
-- Analyze school zones and their relationships
-- Calculate population impacts from flooding scenarios
-
-3. Spatial Analysis:
-- Access geometric data for various features
-- Analyze flood zones and leveed areas
-- Examine relationships between different geographic entities
-
-The dataset contains interconnected information about:
-- Infrastructure: Channel Reaches, Levee Areas, Schools, Hospitals
-- Demographics: Census Tracts with population data
-- Administrative: School Zones, Leveed Areas
-- Property: Real Property data
-- Risk Analysis: Flood zones and risk relationships
-
-Key relationships include flood risk assessment, water flow patterns, and population impact analysis, all connected through a robust spatial data structure.
-`;
+const initialMessage = ``;
 
 const parseText = (m: ChatMessage): ChatMessage => {
 
@@ -45,34 +12,41 @@ const parseText = (m: ChatMessage): ChatMessage => {
     message.sections = [];
 
     const tokens = message.text
-        .replaceAll('\n', "<br/>")
-        .replaceAll('<br/><br/>', "<br/>")
+        // .replaceAll('\n', "<br/>")
+        // .replaceAll('<br/><br/>', "<br/>")
         .split('<location>')
+
+    let text = message.text;
 
     tokens.forEach(token => {
 
-        const pattern = /<label>(.*)<\/label><uri>(.*)<\/uri><\/location>(.*)/
+        const pattern = /<label>(.*)<\/label><uri>(.*)<\/uri><\/location>/
 
         if (pattern.test(token)) {
             const values = pattern.exec(token);
+            const all: string = values?.at(0) as string;
             const label: string = values?.at(1) as string;
             const uri: string = values?.at(2) as string;
-            const post: string = values?.at(3) as string;
 
-            // Ensure that the response contains a real URI and wasn't generated with some other
-            if (uri.startsWith(environment.basePrefix)) {
-                message.sections?.push({ type: 1, text: label, uri: uri })
-            }
-            else {
-                message.sections?.push({ type: 0, text: label, uri: uri })
-            }
+            text = text.replace(all, "[" + label + "](#/explorer/" + encodeURIComponent(uri) + ")");
 
-            message.sections?.push({ type: 0, text: post })
+            // // Ensure that the response contains a real URI and wasn't generated with some other
+            // // if (uri.startsWith(environment.basePrefix)) {
+            //     message.sections?.push({ type: 1, text: label, uri: uri })
+            // // }
+            // // else {
+            // //     message.sections?.push({ type: 0, text: label, uri: uri })
+            // // }
+
+            // message.sections?.push({ type: 0, text: post })
         }
-        else {
-            message.sections?.push({ type: 0, text: token })
-        }
+        // else {
+        //     message.sections?.push({ type: 0, text: token })
+        // }
     })
+
+    message.sections?.push({ type: 0, text: text })
+
 
     return message;
 }

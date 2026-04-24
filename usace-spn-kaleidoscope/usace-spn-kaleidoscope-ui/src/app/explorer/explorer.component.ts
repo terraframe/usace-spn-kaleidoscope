@@ -1,14 +1,14 @@
-import { Component, AfterViewInit, TemplateRef, ViewChild, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, AfterViewInit, inject, OnInit, OnDestroy } from '@angular/core';
 import { Map, NavigationControl, AttributionControl, LngLatBounds, LngLat, GeoJSONSource, LngLatBoundsLike, MapGeoJSONFeature, Source } from "maplibre-gl";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import JSON5 from 'json5'
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { PanelModule } from 'primeng/panel';
 import { ToastModule } from 'primeng/toast';
 import { CheckboxModule } from 'primeng/checkbox';
-import { combineLatest, combineLatestAll, distinctUntilChanged, Observable, Subscription, switchMap, take, withLatestFrom } from 'rxjs';
+import { combineLatest, Observable, Subscription, take, withLatestFrom } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
 
 import { GeoObject } from '../models/geoobject.model';
@@ -33,7 +33,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ButtonModule } from 'primeng/button';
 import { LocationPage } from '../models/chat.model';
 import { TooltipModule } from 'primeng/tooltip';
-import { Configuration } from '../models/configuration.model';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
 export interface TypeLegend { [key: string]: { label: string, color: string, visible: boolean, included: boolean } }
 
@@ -162,8 +162,17 @@ export class ExplorerComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(
         private configurationService: ConfigurationService,
         private explorerService: ExplorerService,
-        private errorService: ErrorService
+        private errorService: ErrorService,
+        private route: ActivatedRoute
     ) {
+
+        this.route.paramMap.pipe(takeUntilDestroyed()).subscribe(params => {
+            const uri = (params.get('uri') || null);
+
+            if (uri != null) {
+                this.handleSelect(uri);
+            }
+        });
 
         /*
          * The map should reload when the geo objects change, the styles change, or the neighbors change
@@ -693,57 +702,12 @@ export class ExplorerComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
 
-    public getUsaceUri(go: GeoObject): string { return ExplorerComponent.getUsaceUri(go); }
-
-    public static getUsaceUri(go: GeoObject): string {
-        if (go.properties.uri.indexOf('dime.usace.mil') !== -1) {
-            return go.properties.uri;
-        } else if (go.properties.uri.indexOf('georegistry') !== -1) {
-            // Program
-            // http://dime.usace.mil/data/program#010180
-            // http://dime.usace.mil/data/program%23000510
-
-            // Channel Reach
-            // https://dev-georegistry.geoprism.net/lpg/deliverable2024/0#ChannelReach-CESWL_AR_06_TER_5
-            // http://dime.usace.mil/data/channelReach%23CESWT_AR_16_WBF_13
-
-            // Project
-            // https://dev-georegistry.geoprism.net/lpg/deliverable2024/0#Project-30000574
-            // http://dime.usace.mil/data/remis_project%23PROJ644
-
-            let uri = go.properties.uri
-                .replace("https://dev-georegistry.geoprism.net/lpg/deliverable2024/0#", "http://dime.usace.mil/data/");
-
-            if (uri.indexOf("Project-") !== -1) {
-                uri = uri.replace("Project-", "remis_project%23");
-            } else {
-                uri = uri.replace("-", "%23");
-            }
-
-            if (uri.indexOf("ChannelReach") !== -1) {
-                uri = uri.replace("ChannelReach", "channelReach");
-            }
-
-            return uri;
-        } else {
-            return go.properties.uri;
-        }
-    }
-
     public getObjectUrl(go: GeoObject): string {
         return ExplorerComponent.getObjectUrl(go);
     }
 
     public static getObjectUrl(go: GeoObject): string {
-        if (go.properties.type.indexOf("Program") != -1
-            || go.properties.type.indexOf("ChannelReach") != -1
-            || go.properties.uri.indexOf("Project") != -1
-            || go.properties.uri.indexOf("usace.mil") != -1
-        ) {
-            return "https://prism.usace-dime.net/view?uri=" + this.getUsaceUri(go);
-        } else {
-            return go.properties.uri;
-        }
+        return go.properties.uri;
     }
 
     /*
@@ -892,42 +856,6 @@ export class ExplorerComponent implements OnInit, OnDestroy, AfterViewInit {
         }
     }
 
-    /*
-      async onFileChange(e: any) {
-        const file:File = e.target.files[0];
-     
-        if (file != null)
-        {
-            this.loadRdf(file);
-        }
-      }
-     
-      async loadRdf(file: File) {
-        this.loading = true;
-     
-        let text = await file.text();
-        this.tripleStore = new Store();
-     
-        const parser = new Parser();
-        parser.parse(text, (error, quad, prefixes) => {
-            if (error)
-            {
-                console.log(error);
-                this.importError = error.message;
-                this.loading = false;
-            }
-            else if (quad) {
-                this.tripleStore?.add(quad);
-            }
-            else {
-                console.log("Successfully loaded " + this.tripleStore?.size + " quads into memory.");
-                this.loading = false;
-                this.modalRef?.hide();
-            }
-        });
-      }
-      */
-
     initializeMap() {
         const layer = this.baseLayers[0];
 
@@ -945,7 +873,7 @@ export class ExplorerComponent implements OnInit, OnDestroy, AfterViewInit {
                     mapbox: {
                         'type': 'raster',
                         'tiles': [
-                            'https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90?access_token=' + environment.token
+                            environment.apiUrl + "api/mapbox/v4/mapbox.satellite/{z}/{x}/{y}@2x.jpg90"
                         ],
                         'tileSize': 512
                     }
@@ -1146,5 +1074,15 @@ export class ExplorerComponent implements OnInit, OnDestroy, AfterViewInit {
         newLayer.enabled = !newLayer.enabled
 
         this.store.dispatch(ExplorerActions.setVectorLayer({ layer: newLayer }));
+    }
+
+
+    handleSelect(uri: string): void {
+
+        this.explorerService.getAttributes(uri, true)
+            .then(geoObject => {
+                this.store.dispatch(ExplorerActions.selectGeoObject({ object: geoObject, zoomMap: true }));
+            })
+            .catch(error => this.errorService.handleError(error))
     }
 }
