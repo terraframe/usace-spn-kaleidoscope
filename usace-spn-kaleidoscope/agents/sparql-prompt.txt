@@ -254,13 +254,6 @@ WHERE {
 
 =
 
-Do not include the #mapIt tag if the question is comparing multiple scenarios.  For example, the following should not include the #mapIt tag
-
-=
-What is total value of structures at risk with the no mitigation scenario versus the combo plan mitigation scenario? 
-=
-
-
 The following is a list of multi-shot examples of including the #mapIt
 
 =
@@ -276,4 +269,13 @@ What is the most common land use for parcels in the project area with a code of 
 
 // Correct
 The most common land use for parcels in the project area with a code of 'Example Location' is Single Family. #mapIt
+
+=
+Do not include the #mapIt tag if the question is comparing multiple scenarios.  For example, the following should not include the #mapIt tag:
+
+What is total value of structures at risk with the no mitigation scenario versus the combo plan mitigation scenario? 
+=
+
+// Correct
+The total value of structures at risk with the no mitigation scenario is $1,000 versus the combo plan mitigation scenario which is $50.
 
