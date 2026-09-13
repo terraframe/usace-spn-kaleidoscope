@@ -29,7 +29,7 @@
           description="Mail Address" />          
         <decimal
           code="lotAcres"
-          label="Lost Acres"
+          label="Lot Acres"
           description="Lot Acres"
           precision="10"
           scale="4" />          

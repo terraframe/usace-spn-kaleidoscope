@@ -1,6 +1,6 @@
 package net.geoprism.climate.model;
 
-import net.geoprism.registry.BusinessEdgeType;
+import net.geoprism.registry.graph.BusinessEdgeType;
 import net.geoprism.registry.service.business.BusinessEdgeTypeBusinessServiceIF;
 import net.geoprism.registry.service.business.ServiceFactory;
 

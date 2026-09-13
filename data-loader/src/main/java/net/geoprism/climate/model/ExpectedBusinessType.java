@@ -1,6 +1,6 @@
 package net.geoprism.climate.model;
 
-import net.geoprism.registry.BusinessType;
+import net.geoprism.registry.graph.BusinessType;
 import net.geoprism.registry.service.business.BusinessTypeBusinessServiceIF;
 import net.geoprism.registry.service.business.ServiceFactory;
 
@@ -27,7 +27,7 @@ public class ExpectedBusinessType extends ExpectedMetadata
   {
     BusinessTypeBusinessServiceIF service = ServiceFactory.getBean(BusinessTypeBusinessServiceIF.class);
 
-    return service.getByCode(this.code);
+    return service.getByCode(this.code).get();
   }
 
 }

@@ -116,7 +116,7 @@ public class GeoObjectDataset extends AbstractDataset
 
     logger.info("About to delete all data on GeoObjectType [" + this.expectedType.code + "].");
 
-    String statement = "DELETE FROM " + serverGOTT.getMdVertex().getDBClassName() + " UNSAFE";
+    String statement = "DELETE FROM " + serverGOTT.getDBClassName() + " UNSAFE";
 
     GraphDBService service = GraphDBService.getInstance();
     GraphRequest request = service.getGraphDBRequest();

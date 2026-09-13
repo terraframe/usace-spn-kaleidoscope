@@ -1,19 +1,18 @@
 package net.geoprism.climate.model;
 
-import org.commongeoregistry.adapter.metadata.GraphTypeDTO;
-
 import net.geoprism.registry.model.GraphType;
 import net.geoprism.registry.service.business.DirectedAcyclicGraphTypeBusinessServiceIF;
 import net.geoprism.registry.service.business.ServiceFactory;
 import net.geoprism.registry.service.business.UndirectedGraphTypeBusinessServiceIF;
+import net.geoprism.registry.view.TypeClass;
 
 public class ExpectedGraphType extends ExpectedMetadata
 {
-  public static final ExpectedGraphType HAS_FLOOD_RISK   = new ExpectedGraphType("HasFloodRisk", true);
+  public static final ExpectedGraphType HAS_FLOOD_RISK = new ExpectedGraphType("HasFloodRisk", true);
 
-  public static final ExpectedGraphType FLOWS_INTO       = new ExpectedGraphType("FlowsInto", true);
+  public static final ExpectedGraphType FLOWS_INTO     = new ExpectedGraphType("FlowsInto", true);
 
-  public static final ExpectedGraphType LOCATED_IN       = new ExpectedGraphType("LocatedIn", true);
+  public static final ExpectedGraphType LOCATED_IN     = new ExpectedGraphType("LocatedIn", true);
 
   public static final ExpectedGraphType HAS_MITIGATION = new ExpectedGraphType("HasMitigation", true);
 
@@ -30,11 +29,11 @@ public class ExpectedGraphType extends ExpectedMetadata
   {
     if (this.isDirected)
     {
-      return GraphTypeDTO.DIRECTED_ACYCLIC_GRAPH_TYPE;
+      return TypeClass.DAG.getCode();
     }
     else
     {
-      return GraphTypeDTO.UNDIRECTED_GRAPH_TYPE;
+      return TypeClass.UNDIRECTED_GRAPH.getCode();
     }
   }
 

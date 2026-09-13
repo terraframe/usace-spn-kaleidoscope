@@ -7,7 +7,6 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.runwaysdk.dataaccess.ProgrammingErrorException;
@@ -20,16 +19,18 @@ import net.geoprism.climate.model.ExpectedGraphType;
 import net.geoprism.registry.etl.DataImportJob;
 import net.geoprism.registry.etl.FormatSpecificImporterFactory.FormatImporterType;
 import net.geoprism.registry.etl.ImportStage;
-import net.geoprism.registry.etl.ObjectImporterFactory.ObjectImportType;
+import net.geoprism.registry.etl.ObjectImporterFactory.JobHistoryType;
 import net.geoprism.registry.etl.upload.EdgeObjectImportConfiguration;
 import net.geoprism.registry.etl.upload.EdgeObjectImporter.ReferenceStrategy;
 import net.geoprism.registry.etl.upload.ImportConfiguration;
 import net.geoprism.registry.etl.upload.ImportConfiguration.ImportStrategy;
 import net.geoprism.registry.graph.DataSource;
+import net.geoprism.registry.io.view.EdgeObjectImportConfigurationDTO;
 import net.geoprism.registry.jobs.ImportHistory;
 import net.geoprism.registry.service.business.ETLBusinessService;
 import net.geoprism.registry.service.business.GraphBusinessService;
 import net.geoprism.registry.service.business.ServiceFactory;
+import net.geoprism.registry.view.EdgeImportConfigurationView;
 
 public class EdgeObjectDataset extends AbstractDataset
 {
@@ -116,21 +117,29 @@ public class EdgeObjectDataset extends AbstractDataset
 
     try (InputStream istream = this.resource.openNewStream())
     {
-      ObjectNode result = service.getJsonImportConfiguration(this.expectedGraphType.getGraphTypeClass(), this.expectedGraphType.getCode(), this.startDate, this.endDate, this.source.getCode(), this.resource.getName(), istream, strategy);
+      EdgeImportConfigurationView view = new EdgeImportConfigurationView();
+      view.setDataSource(source.getCode());
+      view.setDescription(null);
+      view.setEndDate(endDate);
+      view.setStartDate(startDate);
+      view.setStrategy(strategy);
+      view.setGraphTypeClass(this.expectedGraphType.getGraphTypeClass());
+      view.setGraphTypeCode(this.expectedGraphType.getCode());
 
-      result.put(ImportConfiguration.FORMAT_TYPE, FormatImporterType.JSON.name());
-      result.put(ImportConfiguration.OBJECT_TYPE, ObjectImportType.EDGE_OBJECT.name());
+      EdgeObjectImportConfigurationDTO dto = service.getJsonImportConfiguration(this.resource.getName(), istream, view);
+      dto.setFormatType(FormatImporterType.JSON);
+      dto.setObjectType(JobHistoryType.EDGE_OBJECT);
+      dto.setEdgeSource("source");
+      dto.setEdgeSourceStrategy(ReferenceStrategy.CODE);
+      dto.setEdgeSourceType("sourceType");
+      dto.setEdgeSourceTypeStrategy(ReferenceStrategy.CODE);
+      dto.setEdgeTarget("target");
+      dto.setEdgeTargetStrategy(ReferenceStrategy.CODE);
+      dto.setEdgeTargetType("targetType");
+      dto.setEdgeTargetTypeStrategy(ReferenceStrategy.CODE);
+      dto.setValidate(false);
 
-      result.put(EdgeObjectImportConfiguration.EDGE_SOURCE, "source");
-      result.put(EdgeObjectImportConfiguration.EDGE_SOURCE_STRATEGY, ReferenceStrategy.CODE.name());
-      result.put(EdgeObjectImportConfiguration.EDGE_SOURCE_TYPE, "sourceType");
-      result.put(EdgeObjectImportConfiguration.EDGE_SOURCE_TYPE_STRATEGY, ReferenceStrategy.CODE.name());
-      result.put(EdgeObjectImportConfiguration.EDGE_TARGET, "target");
-      result.put(EdgeObjectImportConfiguration.EDGE_TARGET_STRATEGY, ReferenceStrategy.CODE.name());
-      result.put(EdgeObjectImportConfiguration.EDGE_TARGET_TYPE, "targetType");
-      result.put(EdgeObjectImportConfiguration.EDGE_TARGET_TYPE_STRATEGY, ReferenceStrategy.CODE.name());
-
-      EdgeObjectImportConfiguration configuration = (EdgeObjectImportConfiguration) ImportConfiguration.build(result.toString(), true);
+      EdgeObjectImportConfiguration configuration = (EdgeObjectImportConfiguration) ImportConfiguration.build(dto, true);
 
       return configuration;
     }
@@ -165,7 +174,7 @@ public class EdgeObjectDataset extends AbstractDataset
     hist.clearStage();
     hist.addStage(ImportStage.IMPORT);
     hist.setImportFileId(config.getVaultFileId());
-    hist.setConfigJson(config.toJSON().toString());
+    hist.setConfiguration(config.toDTO());
     hist.apply();
 
     ExecutionContext context = job.startSynchronously(hist);

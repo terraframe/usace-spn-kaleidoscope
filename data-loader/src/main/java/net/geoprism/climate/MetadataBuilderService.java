@@ -18,31 +18,41 @@ import com.runwaysdk.session.Request;
 import net.geoprism.climate.model.ExpectedOrganization;
 import net.geoprism.climate.model.ExpectedType;
 import net.geoprism.registry.cache.ServerMetadataCache;
+import net.geoprism.registry.model.AuthorityType;
 import net.geoprism.registry.model.DataSourceDTO;
+import net.geoprism.registry.model.GovernanceLevel;
+import net.geoprism.registry.model.MetadataProfile;
 import net.geoprism.registry.model.ServerOrganization;
+import net.geoprism.registry.model.SourceAuthorityDTO;
 import net.geoprism.registry.service.business.DataSourceBusinessServiceIF;
 import net.geoprism.registry.service.business.OrganizationBusinessServiceIF;
 import net.geoprism.registry.service.business.ServiceFactory;
+import net.geoprism.registry.service.business.SourceAuthorityBusinessServiceIF;
 import net.geoprism.registry.xml.XMLImporter;
 
 @Service
 public class MetadataBuilderService
 {
 
-  private static final Logger           logger = LoggerFactory.getLogger(MetadataBuilderService.class);
+  private static final Logger              logger = LoggerFactory.getLogger(MetadataBuilderService.class);
 
-  private ServerOrganization            organization;
-
-  @Autowired
-  private DataSourceBusinessServiceIF   sourceService;
+  private ServerOrganization               organization;
 
   @Autowired
-  private OrganizationBusinessServiceIF oService;
+  private DataSourceBusinessServiceIF      sourceService;
+
+  @Autowired
+  private SourceAuthorityBusinessServiceIF authorityService;
+
+  @Autowired
+  private OrganizationBusinessServiceIF    oService;
 
   @Request
   public void build() throws Throwable
   {
     this.doIt();
+
+    this.assertTypesExist();
   }
 
   @Transaction
@@ -62,8 +72,22 @@ public class MetadataBuilderService
 
   private void defineSource() throws IOException
   {
+    SourceAuthorityDTO authority = new SourceAuthorityDTO();
+    authority.setCode("USACE");
+    authority.setDescription(new LocalizedValue("USACE"));
+    authority.setLabel(new LocalizedValue("USACE"));
+    authority.setAuthorityType(AuthorityType.GOVERNMENT);
+
+    this.authorityService.apply(authority);
+
     DataSourceDTO dto = new DataSourceDTO();
     dto.setCode(DataConstants.SOURCE);
+    dto.setDescription(new LocalizedValue("USACE"));
+    dto.setLabel(new LocalizedValue("USACE"));
+    dto.setAuthority(authority.getCode());
+    dto.setGovernanceLevel(GovernanceLevel.AD_HOC);
+    dto.setMetadataProfile(MetadataProfile.AD_HOC);
+    dto.setUri("terraframe.com/data/usace");
 
     this.sourceService.apply(dto);
   }
@@ -96,8 +120,6 @@ public class MetadataBuilderService
       // Import the metadata xml file
       XMLImporter xmlImporter = new XMLImporter();
       xmlImporter.importXMLDefinitions(new StreamResource(stream, "spn-types.xml"), organization);
-
-      this.assertTypesExist();
     }
   }
 

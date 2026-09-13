@@ -3,12 +3,8 @@ package net.geoprism.climate.dataset;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
-
-import org.commongeoregistry.adapter.metadata.AttributeType;
-import org.commongeoregistry.adapter.metadata.GeoObjectType;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,21 +15,26 @@ import com.runwaysdk.system.scheduler.ExecutionContext;
 
 import net.geoprism.climate.model.ExpectedHierarchy;
 import net.geoprism.climate.model.ExpectedType;
+import net.geoprism.data.importer.BasicColumnFunction;
 import net.geoprism.data.importer.ShapefileFunction;
 import net.geoprism.registry.etl.DataImportJob;
 import net.geoprism.registry.etl.FormatSpecificImporterFactory.FormatImporterType;
-import net.geoprism.registry.etl.ObjectImporterFactory.ObjectImportType;
+import net.geoprism.registry.etl.ObjectImporterFactory.JobHistoryType;
 import net.geoprism.registry.etl.upload.ImportConfiguration;
 import net.geoprism.registry.etl.upload.ImportConfiguration.ImportStrategy;
 import net.geoprism.registry.graph.DataSource;
 import net.geoprism.registry.io.GeoObjectImportConfiguration;
 import net.geoprism.registry.io.Location;
+import net.geoprism.registry.io.view.GeoObjectImportConfigurationDTO;
+import net.geoprism.registry.io.view.ImportColumnDTO;
+import net.geoprism.registry.io.view.ImportTypeDTO;
 import net.geoprism.registry.jobs.ImportHistory;
 import net.geoprism.registry.model.ServerGeoObjectType;
 import net.geoprism.registry.model.ServerHierarchyType;
 import net.geoprism.registry.service.business.ETLBusinessService;
-import net.geoprism.registry.service.business.ServiceFactory;
 import net.geoprism.registry.service.business.ExcelBusinessService;
+import net.geoprism.registry.service.business.ServiceFactory;
+import net.geoprism.registry.view.ImportConfigurationView;
 
 public class DataExcelImporter
 {
@@ -130,26 +131,30 @@ public class DataExcelImporter
     return hist;
   }
 
-  protected void configureAttributes(JSONArray attributes)
+  protected void configureAttributes(List<ImportColumnDTO> attributes)
   {
-    for (int i = 0; i < attributes.length(); i++)
+    for (ImportColumnDTO attribute : attributes)
     {
-      JSONObject attribute = attributes.getJSONObject(i);
-
       configureAttribute(attribute);
     }
   }
 
-  protected void configureAttribute(JSONObject attribute)
+  protected void configureAttribute(ImportColumnDTO column)
   {
-    String attributeName = attribute.getString(AttributeType.JSON_CODE);
+    String attributeName = column.getCode();
 
     if (this.attributeColumnMappings.containsKey(attributeName))
     {
       ShapefileFunction function = this.attributeColumnMappings.get(attributeName);
 
-      attribute.put(GeoObjectImportConfiguration.CLASS, function.getClass().getName());
-      attribute.put(GeoObjectImportConfiguration.TARGET, function.toJson());
+      if (function instanceof BasicColumnFunction)
+      {
+        column.setTarget( ( (BasicColumnFunction) function ).getAttributeName());
+      }
+      else
+      {
+        column.setFunction(ImportConfiguration.toDTO(function));
+      }
     }
   }
 
@@ -157,16 +162,25 @@ public class DataExcelImporter
   {
     try (InputStream stream = resource.openNewStream())
     {
-      JSONObject result = service.getExcelConfiguration(gotCode, startDate, endDate, null, resource.getName(), stream, strategy, false);
-      JSONObject type = result.getJSONObject(GeoObjectImportConfiguration.TYPE);
-      JSONArray attributes = type.getJSONArray(GeoObjectType.JSON_ATTRIBUTES);
+      ImportConfigurationView view = new ImportConfigurationView();
+      view.setCopyBlank(false);
+      view.setDataSource(source.getCode());
+      view.setDescription(null);
+      view.setEndDate(endDate);
+      view.setStartDate(startDate);
+      view.setStrategy(strategy);
+      view.setType(gotCode);
+
+      GeoObjectImportConfigurationDTO dto = service.getExcelConfiguration(resource.getName(), stream, view);
+      dto.setFormatType(FormatImporterType.EXCEL);
+      dto.setObjectType(JobHistoryType.GEO_OBJECT);
+
+      ImportTypeDTO type = dto.getType();
+      List<ImportColumnDTO> attributes = type.getAttributes();
 
       configureAttributes(attributes);
 
-      result.put(ImportConfiguration.FORMAT_TYPE, FormatImporterType.EXCEL);
-      result.put(ImportConfiguration.OBJECT_TYPE, ObjectImportType.GEO_OBJECT);
-
-      GeoObjectImportConfiguration config = (GeoObjectImportConfiguration) ImportConfiguration.build(result.toString(), true);
+      GeoObjectImportConfiguration config = (GeoObjectImportConfiguration) ImportConfiguration.build(dto, true);
 
       config.setStartDate(startDate);
       config.setEndDate(endDate);
@@ -204,7 +218,7 @@ public class DataExcelImporter
 
     hist.appLock();
     hist.setImportFileId(config.getVaultFileId());
-    hist.setConfigJson(config.toJSON().toString());
+    hist.setConfiguration(config.toDTO());
     hist.setOrganization(type.getOrganization().getOrganization());
     hist.setGeoObjectTypeCode(type.getCode());
     hist.apply();
